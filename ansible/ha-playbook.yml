@@ -1,0 +1,31 @@
+- name: Create/Configure HAProxy
+  hosts: "LB"
+  sudo: true
+  vars:
+    haproxy_conf_file: /etc/haproxy/haproxy.cfg
+  tasks:
+
+    - name: install basic tools
+      yum:  name={{ item }} state=latest
+      with_items:
+       - wget
+       - tar
+       - libselinux-python
+       - python-setuptools
+       - curl
+       - syslog
+
+    - name: install HAProxy
+      yum: name=haproxy state=latest
+
+    - name: copy haproxy configuration file
+      copy: src=templates/haproxy/haproxy.cfg dest={{ haproxy_conf_file }}
+
+    - name: start haproxy
+      service: name=haproxy state=started
+
+    - name: make haproxy auto start
+      service: name=haproxy enabled=yes
+
+    - name: restart haproxy
+      service: name=haproxy state=restarted
