@@ -1,0 +1,27 @@
+- name: Install/Configure apache web server
+  hosts: FRONT
+  sudo: true
+  vars:
+    apache_conf_file: /etc/httpd/conf/httpd.conf
+  tasks:
+    - name: install basic tools
+      yum:  name={{ item }} state=latest
+      with_items:
+       - wget
+       - tar
+       - libselinux-python
+       - python-setuptools
+       - curl
+       - syslog
+
+    - name: install apache web server
+      yum: name=httpd state=latest
+
+    - name: make apache web server auto-start
+      service: name=httpd enabled=yes
+
+    - name: copy apache web server configuration file
+      copy: src=templates/apache/httpd.conf dest={{ apache_conf_file }}
+
+    - name: restart apache web server
+      service: name=httpd state=restarted
