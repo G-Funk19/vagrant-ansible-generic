@@ -4,22 +4,22 @@ Vagrant is a tool for building and distributing development environments.
 
 Vagrant version used: 1.8.1
 
-For further information visite their website: https://www.vagrantup.com/docs/
+For further information visit their website: https://www.vagrantup.com/docs/
 
 Ansible
 =======
-Ansible is an IT automation tool. It can configure systems, deploy software, and orchestrate more advanced IT taske such as continuous deployments.
+Ansible is an IT automation tool. It can configure systems, deploy software, and orchestrate more advanced IT task such as continuous deployments.
 
 Ansible version used: 1.9.4
 
-For more information visite their website: http://docs.ansible.com/ansible/intro_getting_started.html
+For more information visit their website: http://docs.ansible.com/ansible/intro_getting_started.html
 
 Quick Start
 ===========
 
- * Have a simple setup way to have a distributed environments for testing your apps and your software components
+ * Simple setup way to have a distributed environments for testing your apps and your software components
  * Manage virtual machines quickly and in parallel 
- * No need a root access
+ * No need root access
 
 Vagrantfile
 ===========
@@ -34,4 +34,3 @@ Authors
 
  * Ansible was created by [Michael DeHaan]
  * Vagrant was create by [Mitchell Hashimoto]
-
