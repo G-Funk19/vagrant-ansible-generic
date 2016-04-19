@@ -10,7 +10,7 @@ Ansible
 =======
 Ansible is an IT automation tool. It can configure systems, deploy software, and orchestrate more advanced IT task such as continuous deployments.
 
-Ansible version used: 1.9.4
+Ansible version used: 2.0.0
 
 For more information visit their website: http://docs.ansible.com/ansible/intro_getting_started.html
 
@@ -20,6 +20,16 @@ Quick Start
  * Simple setup way to have a distributed environments for testing your apps and your software components
  * Manage virtual machines quickly and in parallel 
  * No need root access
+
+Design principles
+=================
+
+ * Create simply a development environment within less coupling between front-end and back-end
+ * 1 HAproxy
+ * 2 apache web server as container for JavaScript front-end for example
+ * 2 apache tomcat server as container for J2EE back-end
+ * 1 postgresql server for your database
+ * Enable communication between these machines thanks to vagrant's private network
 
 Vagrantfile
 ===========
