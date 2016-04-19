@@ -1,0 +1,20 @@
+- name: Create postgresql environment
+  hosts: "BDD"
+  sudo: True
+  tasks:
+    - name: install tools
+      yum:  name={{ item }} state=latest
+      with_items:
+       - wget
+       - tar
+       - python-setuptools
+       - libselinux-python
+       - curl
+       - syslog
+       - postgresql-server
+       - python-psycopg2
+       - postgresql-contrib
+      tags: packages
+
+    - name: define postgres as a service
+      service: name=postgres state=started enabled=yes
