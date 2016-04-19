@@ -9,12 +9,12 @@
     java_archive: "{{download_folder}}/jre-8u60-linux-x64.tar.gz"
 
     #tomcat vars
-    catalina_home: /appli/tomcat
+    catalina_home: /appli/
     tomcat_major: 8
-    tomcat_version: 8.0.32
-    tomcat_tgz_url: https://www.apache.org/dist/tomcat/tomcat-{{tomcat_major}}/v8/bin/apache-tomcat-{{ tomcat_version }}.tar.gz
-    tomcat_setenv: /appli/tomcat/bin
-    tomcat_service: /etc/init.d/
+    tomcat_version: 8.0.33
+    tomcat_tgz_url: https://www.apache.org/dist/tomcat/tomcat-{{tomcat_major}}/v{{tomcat_version}}/bin/apache-tomcat-{{ tomcat_version }}.tar.gz
+    tomcat_setenv: "{{catalina_home}}/apache-tomcat-{{ tomcat_version }}/bin"
+    tomcat_service: /etc/init.d/tomcat
 
   tasks:
 
@@ -27,60 +27,74 @@
        - libselinux-python
        - curl
        - syslog
+      tags: packages
 
     - name: download Java
       command: "wget -q -O {{java_archive}} --no-check-certificate --no-cookies --header 'Cookie: oraclelicense=accept-securebackup-cookie' {{download_url}} creates={{java_archive}}"
+      tags: packages
 
     - name: unpack archive
       command: "tar -zxf {{java_archive}} -C {{download_folder}} creates={{java_name}}"
+      tags: packages
 
     - name: fix ownership
       file: state=directory path={{java_name}} recurse=yes
+      tags: configuration
 
-    - name: make Java available for system
+    - name: define java oracle as default
       command: 'alternatives --install "/usr/bin/java" "java" "{{java_name}}/bin/java" 2000'
+      tags: configuration
 
-    - name: clean up
+    - name: clean up java archive
       file: state=absent path={{java_archive}}
+      tags: configuration
 
     - name: create tomcat home directory
       file: path={{ catalina_home }} state=directory mode=0755
+      tags: configuration
 
     - name: add tomcat group
       group: name=tomcat state=present
+      tags: configuration
 
     - name: add user tomcat
       user: name=tomcat home={{ catalina_home }} shell=/sbin/nologin state=present
+      tags: configuration
 
     - name: make tomcat owner on catalina home directory
       file: path={{ catalina_home }} owner=tomcat recurse=yes
-
-    - name: download tomcat archive
-      get_url: url={{ tomcat_tgz_url }} dest=/home/vagrant
+      tags: configuration
 
     - name: unarchive tomcat archive
-      unarchive: src=/home/vagrant/apache-tomcat-{{ tomcat_version }}.tar.gz dest={{ catalina_home }}
+      unarchive: src={{ tomcat_tgz_url }} dest={{ catalina_home }} copy=no
+      tags: packages
 
     - name: remove tomcat directoryies
       file: path={{ item }} state=absent
       with_items:
-       - \"{{ catalina_home }}\"/webapps/docs
-       - \"{{ catalina_home }}\"/webapps/examples
-       - \"{{ catalina_home }}\"/webapps/host-manager
-       - \"{{ catalina_home }}\"/webapps/manager
-       - \"{{ catalina_home }}\"/webapps/ROOT
+       - \"{{ catalina_home }}\"/\"/apache-tomcat-{{ tomcat_version }}\"/webapps/docs
+       - \"{{ catalina_home }}\"/\"/apache-tomcat-{{ tomcat_version }}\"/webapps/examples
+       - \"{{ catalina_home }}\"/\"/apache-tomcat-{{ tomcat_version }}\"/webapps/host-manager
+       - \"{{ catalina_home }}\"/\"/apache-tomcat-{{ tomcat_version }}\"/webapps/manager
+       - \"{{ catalina_home }}\"/\"/apache-tomcat-{{ tomcat_version }}\"/webapps/ROOT
+      tags: configuration
 
     - name: remove tomcat archive
       yum: name=apache-tomcat-{{ tomcat_version }}.tar.gz state=absent
+      tags: configuration
 
     - name: tomcat as a service
-      file: src=templates/tomcat/tomcat dst={{tomcat_service}} mode=0755
+      copy: src=templates/tomcat/tomcat dest={{tomcat_service}} mode=0755
+      tags: configuration
 
     - name: configure setenv.sh configuration file
-      file: src=templates/tomcat/setenv.sh dest={{tomcat_setenv}}
+      copy: src=templates/tomcat/setenv.sh dest={{tomcat_setenv}} mode=0755
+      tags: configuration
 
     - name: update run-levels for tomcat service
-      command: update-rc.d tomcat defaults
+      command: 'chkconfig --add "{{tomcat_service}}"  --level 0356'
+      tags: configuration
 
     - name: start tomcat service
       service: name=tomcat state=restarted
+      tags: configuration
