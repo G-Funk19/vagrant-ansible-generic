@@ -6,6 +6,8 @@ Vagrant version used: 1.8.1
 
 For further information visit their website: https://www.vagrantup.com/docs/
 
+[Vagrant Box] (https://s3-eu-west-1.amazonaws.com/sype/vagrant/centos-7box.tar)
+
 Ansible
 =======
 Ansible is an IT automation tool. It can configure systems, deploy software, and orchestrate more advanced IT task such as continuous deployments.
